@@ -1,0 +1,10 @@
+Options -Indexes
+
+RewriteEngine on
+
+RewriteCond $1 !^(index\.php|assets/)
+
+RewriteRule ^(.*)$ index.php/$1 [L]
+
+php_value post_max_size 30M
+php_value upload_max_filesize 30M
