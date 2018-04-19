@@ -1,0 +1,725 @@
+
+USE [Total]
+GO
+alter table [dbo].[AccountTran] drop CONSTRAINT [unq_Accounttran_refnum]
+alter table [dbo].[AllAccountTran] drop CONSTRAINT [unq_AllAccounttran_refnum]
+alter table [dbo].[InvoiceTran] drop CONSTRAINT [unq_Invoicetran_refnum]
+
+GO
+
+USE [Total]
+GO
+
+/****** Object:  StoredProcedure [dbo].[usp_GetCompany]    Script Date: 12/28/2017 13:13:40 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+
+
+
+
+ALTER procedure [dbo].[usp_GetCompany] (
+	@ID	INT
+    )
+    As
+    /*Created BY - Sinish on 2017/10/30 
+	0= all [Company] else one [Company]*/
+Begin
+	SELECT @ID= ISNULL(@ID,0)
+	If @ID=0 
+		Select C.[ID]
+				,C.[NAME]
+				,C.[ADDRESS1]
+				,C.[ADDRESS2]
+				,C.[CITY]
+				,ST.NAME AS [STATE]
+				,C.[PIN]
+				,DT.NAME AS [DISTRICT]
+				,CR.NAME AS [COUNTRY]
+				,C.[RC]
+				,C.[JURISDICTION]
+				,C.[OWNER]
+				,C.[OWNER_TELNO]
+				,C.[OWNER_MOBILE]
+				,C.[EMAIL]
+				,C.[PANNO]
+				,C.[TINNO]
+				,C.[VATCODE]
+				,FY.[FINANCIALYEAR]
+				,C.[BANK]
+				,C.[BRANCH]
+				,C.[IFSC]
+				,C.[BANKACCNUM]
+				,CT.NAME AS [COMPANYTYPE]
+				,C.[LICENSETYPE]
+				,CUR.CODE AS [CURRENCYCODE]
+				,C.[TAX_ID]
+				,C.[ISACTIVE]
+				,C.[ISGST]
+				,C.Logo
+				,c.LockingPeriod
+				,C.islocked
+				,CST.NAME AS [COMPANYSUBTYPE]
+		FROM Company C  with (nolock) 
+				left outer join Country CR  with (nolock) on c.COUNTRY_ID=cr.ID
+				left outer join state ST  with (nolock) on c.STATE_ID=ST.ID
+				left outer join District DT  with (nolock) on c.DISTRICT_ID=DT.ID
+				left outer join FinancialYear FY  with (nolock) on c.FINANCIALYEAR_ID=fy.ID
+				left outer join CompanyType CT  with (nolock) on c.COMPANYTYPE_ID=ct.ID
+				left outer join CompanySubType CST  with (nolock) on c.COMPANYSUBTYPE_ID=CST.ID
+				left outer join currency CUR  with (nolock) on c.CURRENCYCODE=CUR.CODE
+	ELSE
+		Select C.[ID]
+				,C.[NAME]
+				,C.[ADDRESS1]
+				,C.[ADDRESS2]
+				,C.[CITY]
+				,ST.NAME AS [STATE]
+				,C.[PIN]
+				,DT.NAME AS [DISTRICT]
+				,CR.NAME AS [COUNTRY]
+				,C.[RC]
+				,C.[JURISDICTION]
+				,C.[OWNER]
+				,C.[OWNER_TELNO]
+				,C.[OWNER_MOBILE]
+				,C.[EMAIL]
+				,C.[PANNO]
+				,C.[TINNO]
+				,C.[VATCODE]
+				,FY.[FINANCIALYEAR]
+				,C.[BANK]
+				,C.[BRANCH]
+				,C.[IFSC]
+				,C.[BANKACCNUM]
+				,CT.NAME AS [COMPANYTYPE]
+				,C.[LICENSETYPE]
+				,CUR.CODE AS [CURRENCYCODE]
+				,C.[TAX_ID]
+				,C.[ISACTIVE]
+				,C.[ISGST]
+				,C.Logo
+				,c.LockingPeriod
+				,C.islocked
+				,CST.NAME AS [COMPANYSUBTYPE],
+				C.FINANCIALYEAR_ID
+		FROM Company C  with (nolock) 
+				left outer join Country CR  with (nolock) on c.COUNTRY_ID=cr.ID
+				left outer join state ST  with (nolock) on c.STATE_ID=ST.ID
+				left outer join District DT  with (nolock) on c.DISTRICT_ID=DT.ID
+				left outer join FinancialYear FY  with (nolock) on c.FINANCIALYEAR_ID=fy.ID
+				left outer join CompanyType CT  with (nolock) on c.COMPANYTYPE_ID=ct.ID
+				left outer join CompanySubType CST  with (nolock) on c.COMPANYSUBTYPE_ID=CST.ID
+				left outer join currency CUR  with (nolock) on c.CURRENCYCODE=CUR.CODE
+		WHERE C.ID=@ID 
+	END
+
+
+
+
+GO
+
+
+USE [Total]
+GO
+
+/****** Object:  StoredProcedure [dbo].[usp_GetInvoiceTran]    Script Date: 12/28/2017 13:14:12 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+ALTER procedure [dbo].[usp_GetInvoiceTran] (
+	@COMPANY_ID	int = NULL
+	,@FINANCIALYEAR_ID tinyint = NULL
+	,@PREFIX NVARCHAR(20) = NULL
+	,@VOUCHER_ID INT = NULL
+	,@ISACTIVE BIT =NULL
+    )
+    As
+    /*Created BY - Sinish on 2017/11/28 
+	0= all states else one state*/
+Begin
+SELECT 
+	 I.[VOUCHER_ID]
+	,I.[COMPANY_ID]
+	,I.[DATE]
+	,I.[ISSALES]
+	,I.[FINANCIALYEAR_ID]
+	,I.[ACCOUNT_ID]
+	,A.ACCOUNTDESC AS [ACCOUNT]
+	,I.[LEDGER_ID]
+	,L.ACCOUNTDESC AS [LEDGER]
+	,I.[PREFIX]
+	,I.[PURCHASEORDER_ID]
+	,I.[ITEM_ID]
+	,IT.[NAME] AS [ITEM]
+	,I.[QUANTITY]
+	,I.[RATE]
+	,I.[UNIT_ID]
+	,U.[NAME] AS [UNIT]
+	,I.[AMOUNT]
+	,I.[DISCOUNT]
+	,I.[CGSTPERCENT]
+	,I.[SGSTPERCENT]
+	,I.[IGSTPERCENT]
+	,I.[VATPERCENT]
+	,I.[CGSTAMOUNT]
+	,I.[SGSTAMOUNT]
+	,I.[IGSTAMOUNT]
+	,I.[VATAMOUNT]
+	,I.[CREDITPERIOD]
+	,I.[CREATEDON]
+	,I.[CREATEDBY]
+	,IT.[STOCK]
+	,I.REFNUM
+	,I.shipping_partyAddress_ID
+	,REPLICATE('0',6-LEN(RTRIM(I.VOUCHER_ID))) + RTRIM(I.VOUCHER_ID) as V_ID
+	,IT.HSNCODE
+	,A.TINNO	
+ FROM InvoiceTran I with (nolock) 
+		JOIN Account A  with (nolock) ON I.ACCOUNT_ID=A.ID
+		JOIN ACCOUNT L  with (nolock) ON I.LEDGER_ID=L.ID
+		JOIN Item It  with (nolock) ON I.ITEM_ID=It.ID
+		JOIN Unit U  with (nolock) ON I.UNIT_ID=U.ID
+  WHERE I.COMPANY_ID=ISNULL(@COMPANY_ID,I.COMPANY_ID) 
+	 AND I.[FINANCIALYEAR_ID]=ISNULL(@FINANCIALYEAR_ID,I.FINANCIALYEAR_ID)
+	 AND I.[PREFIX] = ISNULL(@PREFIX,I.PREFIX)
+	 AND I.[VOUCHER_ID]=ISNULL(@VOUCHER_ID,I.VOUCHER_ID)
+	 AND I.[ISACTIVE]=ISNULL(@ISACTIVE,I.ISACTIVE)
+ORDER BY I.ID
+End
+
+
+
+
+
+GO
+
+USE [Total]
+GO
+
+/****** Object:  StoredProcedure [dbo].[usp_GetDebitnote]    Script Date: 12/28/2017 13:14:56 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+
+
+
+
+ALTER procedure [dbo].[usp_GetDebitnote] (
+	@COMPANY_ID	int = NULL
+	,@FINANCIALYEAR_ID tinyint = NULL
+	,@PREFIX NVARCHAR(20) = NULL
+	,@VOUCHER_ID INT = NULL
+	,@ISACTIVE BIT =NULL
+    )
+    As
+    /*Created BY - Sinish on 2017/11/28 
+	0= all states else one state*/
+Begin
+	SELECT 
+		AA.ID,
+		AA.COMPANY_ID,
+		AA.DATE,
+		AA.MONTH,
+		AA.YEAR,
+		AA.FINANCIALYEAR_ID,
+		AA.PREFIX,
+		AA.VOUCHER_ID,
+		AA.REFNUM,
+		AA.DR_ACCOUNT_ID,
+		DR.ACCOUNTDESC AS [ACCOUNT],
+		AA.CR_ACCOUNT_ID,
+		CR.ACCOUNTDESC AS [LEDGER],
+		AA.AMOUNT,
+		AA.ITEM_ID,
+		AA.QUANTITY,
+		AA.UNIT_ID,
+		IT.[NAME] AS [ITEM],
+		U.[NAME] AS [UNIT],
+		AA.RATE,
+		AA.DISCOUNT,
+		AA.CGSTPERCENT,
+		AA.SGSTPERCENT,
+		AA.IGSTPERCENT,
+		AA.VATPERCENT,
+		AA.CGSTAMOUNT,
+		AA.SGSTAMOUNT,
+		AA.IGSTAMOUNT,
+		AA.VATAMOUNT,
+		(select top 1 NARRATION from AccountTran with(nolock) where[FINANCIALYEAR_ID]=ISNULL(@FINANCIALYEAR_ID,0) AND  [PREFIX] = ISNULL(@PREFIX,'A') AND VOUCHER_ID=ISNULL(@VOUCHER_ID,0)  ) as NARRATION,
+		AA.companytax_id,
+		AA.ISACTIVE,
+		REPLICATE('0',6-LEN(RTRIM(AA.VOUCHER_ID))) + RTRIM(AA.VOUCHER_ID) as V_ID,
+		It.HSNCODE,
+		DR.TINNO
+	 FROM AllAccountTran AA with (nolock) 
+			--join AccountTran A with (nolock)  on AA.DR_ACCOUNT_ID=a.DR_ACCOUNT_ID and AA.VOUCHER_ID=ISNULL(@VOUCHER_ID,A.VOUCHER_ID)
+			JOIN Account DR with (nolock)  ON AA.DR_ACCOUNT_ID=DR.ID
+			JOIN ACCOUNT CR with (nolock)  ON AA.CR_ACCOUNT_ID=CR.ID
+			JOIN Item It with (nolock)  ON AA.ITEM_ID=It.ID
+			JOIN Unit U with (nolock)  ON AA.UNIT_ID=U.ID
+	  WHERE AA.COMPANY_ID=ISNULL(@COMPANY_ID,AA.COMPANY_ID) 
+		 AND AA.[FINANCIALYEAR_ID]=ISNULL(@FINANCIALYEAR_ID,AA.FINANCIALYEAR_ID)
+		 AND AA.[PREFIX] = ISNULL(@PREFIX,AA.PREFIX)
+		 AND AA.[VOUCHER_ID]=ISNULL(@VOUCHER_ID,AA.VOUCHER_ID)
+		 AND AA.[ISACTIVE]=ISNULL(@ISACTIVE,AA.ISACTIVE)
+	ORDER BY AA.ID
+End
+
+
+
+
+GO
+
+USE [Total]
+GO
+
+/****** Object:  StoredProcedure [dbo].[usp_GetCreditnote]    Script Date: 12/28/2017 13:15:26 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+--alter table allaccounttran add companytax_id int
+--go
+
+
+
+ALTER procedure [dbo].[usp_GetCreditnote] (
+	@COMPANY_ID	int = NULL
+	,@FINANCIALYEAR_ID tinyint = NULL
+	,@PREFIX NVARCHAR(20) = NULL
+	,@VOUCHER_ID INT = NULL
+	,@ISACTIVE BIT =NULL
+    )
+    As
+    /*Created BY - Sinish on 2017/11/28 
+	0= all states else one state*/
+Begin
+	SELECT 
+		AA.ID,
+		AA.COMPANY_ID,
+		AA.DATE,
+		AA.MONTH,
+		AA.YEAR,
+		AA.FINANCIALYEAR_ID,
+		AA.PREFIX,
+		AA.VOUCHER_ID,
+		AA.REFNUM,
+		AA.DR_ACCOUNT_ID,
+		DR.ACCOUNTDESC AS [LEDGER],
+		AA.CR_ACCOUNT_ID,
+		CR.ACCOUNTDESC AS [ACCOUNT],
+		AA.AMOUNT,
+		AA.ITEM_ID,
+		AA.QUANTITY,
+		AA.UNIT_ID,
+		IT.[NAME] AS [ITEM],
+		U.[NAME] AS [UNIT],
+		AA.RATE,
+		AA.DISCOUNT,
+		AA.CGSTPERCENT,
+		AA.SGSTPERCENT,
+		AA.IGSTPERCENT,
+		AA.VATPERCENT,
+		AA.CGSTAMOUNT,
+		AA.SGSTAMOUNT,
+		AA.IGSTAMOUNT,
+		AA.VATAMOUNT,
+		(select top 1 NARRATION from AccountTran with(nolock) where[FINANCIALYEAR_ID]=ISNULL(@FINANCIALYEAR_ID,0) AND  [PREFIX] = ISNULL(@PREFIX,'A') AND VOUCHER_ID=ISNULL(@VOUCHER_ID,0)  ) as NARRATION,
+		AA.companytax_id,
+		AA.ISACTIVE,
+		REPLICATE('0',6-LEN(RTRIM(AA.VOUCHER_ID))) + RTRIM(AA.VOUCHER_ID) as V_ID,
+		It.HSNCODE,
+		CR.TINNO
+	 FROM AllAccountTran AA  with (nolock) 
+			--Left outer join AccountTran A  with (nolock)  on AA.CR_ACCOUNT_ID=a.CR_ACCOUNT_ID and AA.VOUCHER_ID=ISNULL(@VOUCHER_ID,A.VOUCHER_ID)
+			JOIN Account DR with (nolock)  ON AA.DR_ACCOUNT_ID=DR.ID
+			JOIN ACCOUNT CR with (nolock)  ON AA.CR_ACCOUNT_ID=CR.ID
+			JOIN Item It with (nolock)  ON AA.ITEM_ID=It.ID
+			JOIN Unit U with (nolock)  ON AA.UNIT_ID=U.ID
+	  WHERE AA.COMPANY_ID=ISNULL(@COMPANY_ID,AA.COMPANY_ID) 
+		 AND AA.[FINANCIALYEAR_ID]=ISNULL(@FINANCIALYEAR_ID,AA.FINANCIALYEAR_ID)
+		 AND AA.[PREFIX] = ISNULL(@PREFIX,AA.PREFIX)
+		 AND AA.[VOUCHER_ID]=ISNULL(@VOUCHER_ID,AA.VOUCHER_ID)
+		 AND AA.[ISACTIVE]=ISNULL(@ISACTIVE,AA.ISACTIVE)
+	ORDER BY AA.ID
+End
+
+
+
+
+
+
+GO
+
+
+USE [Total]
+GO
+
+/****** Object:  StoredProcedure [dbo].[usp_GetPartyAddress]    Script Date: 12/28/2017 13:15:50 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+ALTER procedure [dbo].[usp_GetPartyAddress](
+	 @COMPANY_ID int = NULL
+	,@ACCOUNT_ID int = NULL
+	,@DISTRICT_ID int = NULL
+	,@STATE_ID int = NULL
+	,@COUNTRY_ID int = NULL
+	,@ISBILLING bit = NULL
+	,@ID bit = NULL
+	)
+AS
+Begin
+	SELECT @ID= ISNULL(@ID,0)
+	If @ID=0 
+	select 
+		 PA.ID AS PartyAddress_ID
+		,PA.[COMPANY_ID]
+		,PA.[ACCOUNT_ID]
+		,A.ACCOUNTDESC AS ACCOUNT
+		,PA.[ADDRESS1]
+		,PA.[ADDRESS2]
+		,PA.[PINCODE]
+		,PA.[DISTRICT_ID]
+		,D.NAME AS DISTRICT
+		,PA.[STATE_ID]
+		,S.NAME AS [STATE]
+		,PA.[COUNTRY_ID]
+		,C.NAME AS COUNTRY
+		,PA.[ISBILLING]
+		,PA.[CREATEDBY]
+		,PA.[CREATEDON]
+		,PA.[MODIFIEDBY]
+		,PA.[MODIFIEDON]
+		,PA.[ISACTIVE]
+	from 
+		PartyAddress PA with (nolock)
+		INNER JOIN Account A WITH(NOLOCK) ON PA.ACCOUNT_ID=A.ID
+		INNER JOIN District D WITH(NOLOCK) ON PA.DISTRICT_ID=D.ID
+		INNER JOIN State S WITH(NOLOCK) ON PA.STATE_ID=S.ID
+		INNER JOIN COUNTRY C WITH(NOLOCK) ON PA.COUNTRY_ID=C.ID
+	where 
+		PA.COMPANY_ID =isnull(@COMPANY_ID,PA.COMPANY_ID)
+		AND PA.ACCOUNT_ID=ISNULL(@ACCOUNT_ID,PA.ACCOUNT_ID)
+		AND PA.DISTRICT_ID=ISNULL(@DISTRICT_ID,PA.DISTRICT_ID)
+		AND PA.STATE_ID=ISNULL(@STATE_ID,PA.STATE_ID)
+		AND PA.COUNTRY_ID=ISNULL(@COUNTRY_ID,PA.COUNTRY_ID)
+		AND PA.ISBILLING = ISNULL(@ISBILLING,PA.ISBILLING)
+		
+	ELSE
+	select 
+		 PA.ID AS PartyAddress_ID
+		,PA.[COMPANY_ID]
+		,PA.[ACCOUNT_ID]
+		,A.ACCOUNTDESC AS ACCOUNT
+		,PA.[ADDRESS1]
+		,PA.[ADDRESS2]
+		,PA.[PINCODE]
+		,PA.[DISTRICT_ID]
+		,D.NAME AS DISTRICT
+		,PA.[STATE_ID]
+		,S.NAME AS [STATE]
+		,PA.[COUNTRY_ID]
+		,C.NAME AS COUNTRY
+		,PA.[ISBILLING]
+		,PA.[CREATEDBY]
+		,PA.[CREATEDON]
+		,PA.[MODIFIEDBY]
+		,PA.[MODIFIEDON]
+		,PA.[ISACTIVE]
+	from 
+		PartyAddress PA with (nolock)
+		INNER JOIN Account A WITH(NOLOCK) ON PA.ACCOUNT_ID=A.ID
+		INNER JOIN District D WITH(NOLOCK) ON PA.DISTRICT_ID=D.ID
+		INNER JOIN State S WITH(NOLOCK) ON PA.STATE_ID=S.ID
+		INNER JOIN COUNTRY C WITH(NOLOCK) ON PA.COUNTRY_ID=C.ID
+	where 
+		PA.COMPANY_ID =isnull(@COMPANY_ID,PA.COMPANY_ID)
+		AND PA.ACCOUNT_ID=ISNULL(@ACCOUNT_ID,PA.ACCOUNT_ID)
+		AND PA.DISTRICT_ID=ISNULL(@DISTRICT_ID,PA.DISTRICT_ID)
+		AND PA.STATE_ID=ISNULL(@STATE_ID,PA.STATE_ID)
+		AND PA.COUNTRY_ID=ISNULL(@COUNTRY_ID,PA.COUNTRY_ID)
+		AND PA.ISBILLING = ISNULL(@ISBILLING,PA.ISBILLING)
+		AND PA.ID = @ID
+END
+
+
+
+
+
+GO
+
+
+USE [Total]
+GO
+
+/****** Object:  StoredProcedure [dbo].[usp_InsCompany]    Script Date: 12/28/2017 13:16:14 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+ALTER procedure [dbo].[usp_InsCompany] (
+		@NAME nvarchar(100) = NULL
+		,@ADDRESS1 nvarchar(200) = NULL
+		,@ADDRESS2 nvarchar(200) = NULL
+		,@CITY nvarchar(100) = NULL
+		,@STATE_ID int = NULL
+		,@PIN nvarchar(20) = NULL
+		,@DISTRICT_ID int = NULL
+		,@COUNTRY_ID smallint 
+		,@RC varchar(20) = NULL
+		,@JURISDICTION varchar(50) = NULL
+		,@OWNER nvarchar(100) = NULL
+		,@OWNER_TELNO nvarchar(30) = NULL
+		,@OWNER_MOBILE nvarchar(20) = NULL
+		,@EMAIL nvarchar(100) = NULL
+		,@PANNO nvarchar(20) = NULL
+		,@TINNO nvarchar(20) 
+		,@VATCODE nvarchar(50) = NULL
+		,@FINANCIALYEAR_ID SMALLINT 
+		,@BANK nvarchar(100) = NULL
+		,@BRANCH nvarchar(100) = NULL
+		,@IFSC varchar(30) = NULL
+		,@BANKACCNUM varchar(20) = NULL
+		,@COMPANYTYPE_ID int = NULL
+		,@LICENSETYPE nvarchar(100) = NULL
+		,@CURRENCYCODE nchar(3) = NULL
+		,@TAX_ID tinyint = NULL
+		,@USERID int = NULL
+		,@ISACTIVE bit = NULL
+		,@ISGST bit = NULL
+		,@COMPANYSUBTYPE_ID smallint = NULL
+		,@Logo NVARCHAR(20) = NULL
+		,@LockingPeriod SMALLINT = NULL
+    )
+    As
+    /*Created BY - Ajith on 2017/10/29 */
+Begin
+	SET NOCOUNT ON;
+    INSERT INTO COMPANY (
+		 [NAME]
+		,[ADDRESS1]
+		,[ADDRESS2]
+		,[CITY]
+		,[STATE_ID]
+		,[PIN]
+		,[DISTRICT_ID]
+		,[COUNTRY_ID]
+		,[RC]
+		,[JURISDICTION]
+		,[OWNER]
+		,[OWNER_TELNO]
+		,[OWNER_MOBILE]
+		,[EMAIL]
+		,[PANNO]
+		,[TINNO]
+		,[VATCODE]
+		,[FINANCIALYEAR_ID]
+		,[BANK]
+		,[BRANCH]
+		,[IFSC]
+		,[BANKACCNUM]
+		,[COMPANYTYPE_ID]
+		,[LICENSETYPE]
+		,[CURRENCYCODE]
+		,[TAX_ID]
+		,[USERID]
+		,[CREATEDON]
+		,[UPDATEDON]
+		,[ISACTIVE]
+		,[ISGST]
+		,[COMPANYSUBTYPE_ID]
+		,Logo
+		,LockingPeriod
+    )
+    VALUES (
+		 @NAME
+		,@ADDRESS1
+		,@ADDRESS2
+		,@CITY
+		,@STATE_ID
+		,@PIN
+		,@DISTRICT_ID
+		,@COUNTRY_ID
+		,@RC
+		,@JURISDICTION
+		,@OWNER
+		,@OWNER_TELNO
+		,@OWNER_MOBILE
+		,@EMAIL
+		,@PANNO
+		,@TINNO
+		,@VATCODE
+		,@FINANCIALYEAR_ID
+		,@BANK
+		,@BRANCH
+		,@IFSC
+		,@BANKACCNUM
+		,@COMPANYTYPE_ID
+		,@LICENSETYPE
+		,@CURRENCYCODE
+		,@TAX_ID
+		,@USERID
+		,GETDATE()
+		,GETDATE()
+		,@ISACTIVE
+		,@ISGST
+		,@COMPANYSUBTYPE_ID
+		,@Logo
+		,@LockingPeriod
+    )
+    Declare @new_identity int;
+
+SELECT @new_identity = SCOPE_IDENTITY()
+--inserting master data for company
+	exec [usp_InsMasterCompanyData] @new_identity,@TINNO,@FINANCIALYEAR_ID,@COUNTRY_ID
+
+return @new_identity;
+    End
+
+
+
+
+
+
+
+
+GO
+
+
+USE [Total]
+GO
+
+/****** Object:  StoredProcedure [dbo].[usp_updCompany]    Script Date: 12/28/2017 13:16:43 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+ALTER procedure [dbo].[usp_updCompany] (
+			 @ID int
+			,@NAME nvarchar(100) = NULL
+			,@ADDRESS1 nvarchar(200) = NULL
+			,@ADDRESS2 nvarchar(200) = NULL
+			,@CITY nvarchar(100) = NULL
+			,@STATE_ID int = NULL
+			,@PIN nvarchar(20) = NULL
+			,@DISTRICT_ID int = NULL
+			,@COUNTRY_ID smallint = NULL
+			,@RC varchar(20) = NULL
+			,@JURISDICTION varchar(50) = NULL
+			,@OWNER nvarchar(100) = NULL
+			,@OWNER_TELNO nvarchar(30) = NULL
+			,@OWNER_MOBILE nvarchar(20) = NULL
+			,@EMAIL nvarchar(100) = NULL
+			,@PANNO nvarchar(20) = NULL
+			,@TINNO nvarchar(20) = NULL
+			,@VATCODE nvarchar(50) = NULL
+			,@FINANCIALYEAR_ID smallint = NULL
+			,@BANK nvarchar(100) = NULL
+			,@BRANCH nvarchar(100) = NULL
+			,@IFSC varchar(30) = NULL
+			,@BANKACCNUM varchar(20) = NULL
+			,@COMPANYTYPE_ID int = NULL
+			,@LICENSETYPE nvarchar(100) = NULL
+			,@CURRENCYCODE nchar(3) = NULL
+			,@TAX_ID tinyint = NULL
+			,@USERID int = NULL
+			,@ISACTIVE bit = 1
+			,@ISGST bit =1
+			,@Logo NVARCHAR(20) = NULL
+			,@LockingPeriod SMALLINT = NULL
+			,@IsLocked bit = NULL
+			,@COMPANYSUBTYPE_ID int = NULL
+		)
+    As
+    /*Created BY - Sinish on 2017/10/30 */
+Begin
+	Update Company set 
+		 [NAME] =@NAME
+		,[ADDRESS1] =@ADDRESS1
+		,[ADDRESS2] =@ADDRESS2
+		,[CITY] =@CITY
+		,[STATE_ID] =@STATE_ID
+		,[PIN] =@PIN
+		,[DISTRICT_ID] =@DISTRICT_ID
+		,[COUNTRY_ID] =@COUNTRY_ID
+		,[RC] =@RC
+		,[JURISDICTION] =@JURISDICTION
+		,[OWNER] =@OWNER
+		,[OWNER_TELNO] =@OWNER_TELNO
+		,[OWNER_MOBILE] =@OWNER_MOBILE
+		,[EMAIL] =@EMAIL
+		,[PANNO] =@PANNO
+		,[TINNO] =@TINNO
+		,[VATCODE] =@VATCODE
+		,[FINANCIALYEAR_ID] =@FINANCIALYEAR_ID
+		,[BANK] =@BANK
+		,[BRANCH] =@BRANCH
+		,[IFSC] =@IFSC
+		,[BANKACCNUM] =@BANKACCNUM
+		,[COMPANYTYPE_ID] =@COMPANYTYPE_ID
+		,[LICENSETYPE] =@LICENSETYPE
+		,[CURRENCYCODE] =@CURRENCYCODE
+		,[TAX_ID] =@TAX_ID
+		,[USERID] =@USERID
+		,[UPDATEDON] =getdate()
+		,[ISACTIVE] =@ISACTIVE
+		,[ISGST] =@ISGST
+		,Logo=@Logo 
+		,LockingPeriod=@LockingPeriod 
+		,islocked=@IsLocked
+		,COMPANYSUBTYPE_ID=@COMPANYSUBTYPE_ID
+	where id=@ID
+end
+
+
+
+
+
+
+
+
+
+
+
+
+GO
+
+
+
