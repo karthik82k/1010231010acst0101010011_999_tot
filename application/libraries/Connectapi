@@ -1,0 +1,10 @@
+<?php
+
+class Connectapi {
+
+    public function __construct($db_name) {
+        $this->db->db_select($db_name);
+    }
+
+
+}
