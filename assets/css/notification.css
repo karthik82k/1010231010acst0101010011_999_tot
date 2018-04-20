@@ -1,0 +1,112 @@
+.notification_error{
+    top:0px; 
+    width:978px; 
+    background: #F6D8D8; 
+    /*border: 1px solid darkred; */
+    color : darkred;
+    padding-top: 10px;
+    padding-bottom: 10px; 
+    padding-left: 10px;
+    padding-right: 10px; 
+  /*  border-radius: 5px 5px 5px 5px;    */
+    margin-bottom: 1px;
+    opacity: 0.97;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification_alert{
+    top:0px; 
+    width:978px; 
+    background: #F6F6EF; 
+    border: 1px solid #CCCCCC; 
+    color: #777;
+    padding-top: 10px;
+    padding-bottom: 10px; 
+    padding-left: 10px;
+    padding-right: 10px; 
+    /*border-radius: 5px 5px 5px 5px;   */
+    margin-bottom: 1px;
+    opacity: 0.97;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification_success{
+    top:0px; 
+    width:978px; 
+    background: #BEFFBF; 
+   /* border: 1px solid darkgreen; */
+    color: darkgreen;
+    padding-top: 10px;
+    padding-bottom: 10px; 
+    padding-left: 10px;
+    padding-right: 10px; 
+   /* border-radius: 5px 5px 5px 5px;*/
+    margin-bottom: 1px;
+    opacity: 0.97;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification_warning{
+    top:0px; 
+    width:978px; 
+    background: #FFDB99; 
+   /* border: 1px solid #AA6600; */
+    color: #AA6600;
+    padding-top: 10px;
+    padding-bottom: 10px; 
+    padding-left: 10px;
+    padding-right: 10px; 
+   /* border-radius: 5px 5px 5px 5px;*/
+    margin-bottom: 1px;
+    opacity: 0.97;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification_information{
+    top:0px; 
+    width:978px; 
+    background:  #A4DDED; 
+   /* border: 1px solid #4A708B; */
+    color: #002366;
+    padding-top: 10px;
+    padding-bottom: 10px; 
+    padding-left: 10px;
+    padding-right: 10px;
+  /*  border-radius: 5px 5px 5px 5px;*/
+    margin-bottom: 1px;
+    opacity: 0.97;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+span.notification_close_button{
+    position: relative;
+    float :  right;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+	border:0px;
+  /*  border: 1px solid;
+    border-radius: 5px; */
+    vertical-align: top;
+    padding-bottom: 3px;
+    top: -3px;
+}
+
+span.notification_close_button:hover{
+    font-weight: bold;
+    opacity: 1;
+}
+
+div.show_help_button {
+    text-align: right;
+    width : 955px;
+}
+
+span.rows_per_page_input_confirm{
+    cursor: pointer;
+}

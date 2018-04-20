@@ -1,0 +1,411 @@
+USE [Total]
+GO
+
+/****** Object:  StoredProcedure [dbo].[usp_GetDebitnote]    Script Date: 12/22/2017 19:08:51 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+
+
+
+
+
+ALTER procedure [dbo].[usp_GetDebitnote] (
+	@COMPANY_ID	int = NULL
+	,@FINANCIALYEAR_ID tinyint = NULL
+	,@PREFIX NVARCHAR(20) = NULL
+	,@VOUCHER_ID INT = NULL
+	,@ISACTIVE BIT =NULL
+    )
+    As
+    /*Created BY - Sinish on 2017/11/28 
+	0= all states else one state*/
+Begin
+	SELECT 
+		AA.ID,
+		AA.COMPANY_ID,
+		AA.DATE,
+		AA.MONTH,
+		AA.YEAR,
+		AA.FINANCIALYEAR_ID,
+		AA.PREFIX,
+		AA.VOUCHER_ID,
+		AA.REFNUM,
+		AA.DR_ACCOUNT_ID,
+		DR.ACCOUNTDESC AS [ACCOUNT],
+		AA.CR_ACCOUNT_ID,
+		CR.ACCOUNTDESC AS [LEDGER],
+		AA.AMOUNT,
+		AA.ITEM_ID,
+		AA.QUANTITY,
+		AA.UNIT_ID,
+		IT.[NAME] AS [ITEM],
+		U.[NAME] AS [UNIT],
+		AA.RATE,
+		AA.DISCOUNT,
+		AA.CGSTPERCENT,
+		AA.SGSTPERCENT,
+		AA.IGSTPERCENT,
+		AA.VATPERCENT,
+		AA.CGSTAMOUNT,
+		AA.SGSTAMOUNT,
+		AA.IGSTAMOUNT,
+		AA.VATAMOUNT,
+		(select top 1 NARRATION from AccountTran with(nolock) where[FINANCIALYEAR_ID]=ISNULL(@FINANCIALYEAR_ID,0) AND  [PREFIX] = ISNULL(@PREFIX,'A') AND VOUCHER_ID=ISNULL(@VOUCHER_ID,0)  ) as NARRATION,
+		AA.companytax_id,
+		AA.ISACTIVE,
+		REPLICATE('0',6-LEN(RTRIM(AA.VOUCHER_ID))) + RTRIM(AA.VOUCHER_ID) as V_ID,
+		It.HSNCODE,
+		DR.TINNO
+	 FROM AllAccountTran AA with (nolock) 
+			--join AccountTran A with (nolock)  on AA.DR_ACCOUNT_ID=a.DR_ACCOUNT_ID and AA.VOUCHER_ID=ISNULL(@VOUCHER_ID,A.VOUCHER_ID)
+			JOIN Account DR with (nolock)  ON AA.DR_ACCOUNT_ID=DR.ID
+			JOIN ACCOUNT CR with (nolock)  ON AA.CR_ACCOUNT_ID=CR.ID
+			JOIN Item It with (nolock)  ON AA.ITEM_ID=It.ID
+			JOIN Unit U with (nolock)  ON AA.UNIT_ID=U.ID
+	  WHERE AA.COMPANY_ID=ISNULL(@COMPANY_ID,AA.COMPANY_ID) 
+		 AND AA.[FINANCIALYEAR_ID]=ISNULL(@FINANCIALYEAR_ID,AA.FINANCIALYEAR_ID)
+		 AND AA.[PREFIX] = ISNULL(@PREFIX,AA.PREFIX)
+		 AND AA.[VOUCHER_ID]=ISNULL(@VOUCHER_ID,AA.VOUCHER_ID)
+		 AND AA.[ISACTIVE]=ISNULL(@ISACTIVE,AA.ISACTIVE)
+	ORDER BY AA.ID
+End
+
+
+
+
+
+
+
+
+
+
+GO
+
+
+USE [Total]
+GO
+
+/****** Object:  StoredProcedure [dbo].[usp_GetCreditnote]    Script Date: 12/22/2017 19:09:16 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+--alter table allaccounttran add companytax_id int
+--go
+
+
+
+ALTER procedure [dbo].[usp_GetCreditnote] (
+	@COMPANY_ID	int = NULL
+	,@FINANCIALYEAR_ID tinyint = NULL
+	,@PREFIX NVARCHAR(20) = NULL
+	,@VOUCHER_ID INT = NULL
+	,@ISACTIVE BIT =NULL
+    )
+    As
+    /*Created BY - Sinish on 2017/11/28 
+	0= all states else one state*/
+Begin
+	SELECT 
+		AA.ID,
+		AA.COMPANY_ID,
+		AA.DATE,
+		AA.MONTH,
+		AA.YEAR,
+		AA.FINANCIALYEAR_ID,
+		AA.PREFIX,
+		AA.VOUCHER_ID,
+		AA.REFNUM,
+		AA.DR_ACCOUNT_ID,
+		DR.ACCOUNTDESC AS [LEDGER],
+		AA.CR_ACCOUNT_ID,
+		CR.ACCOUNTDESC AS [ACCOUNT],
+		AA.AMOUNT,
+		AA.ITEM_ID,
+		AA.QUANTITY,
+		AA.UNIT_ID,
+		IT.[NAME] AS [ITEM],
+		U.[NAME] AS [UNIT],
+		AA.RATE,
+		AA.DISCOUNT,
+		AA.CGSTPERCENT,
+		AA.SGSTPERCENT,
+		AA.IGSTPERCENT,
+		AA.VATPERCENT,
+		AA.CGSTAMOUNT,
+		AA.SGSTAMOUNT,
+		AA.IGSTAMOUNT,
+		AA.VATAMOUNT,
+		(select top 1 NARRATION from AccountTran with(nolock) where[FINANCIALYEAR_ID]=ISNULL(@FINANCIALYEAR_ID,0) AND  [PREFIX] = ISNULL(@PREFIX,'A') AND VOUCHER_ID=ISNULL(@VOUCHER_ID,0)  ) as NARRATION,
+		AA.companytax_id,
+		AA.ISACTIVE,
+		REPLICATE('0',6-LEN(RTRIM(AA.VOUCHER_ID))) + RTRIM(AA.VOUCHER_ID) as V_ID,
+		It.HSNCODE,
+		CR.TINNO		
+	 FROM AllAccountTran AA  with (nolock) 
+			--Left outer join AccountTran A  with (nolock)  on AA.CR_ACCOUNT_ID=a.CR_ACCOUNT_ID and AA.VOUCHER_ID=ISNULL(@VOUCHER_ID,A.VOUCHER_ID)
+			JOIN Account DR with (nolock)  ON AA.DR_ACCOUNT_ID=DR.ID
+			JOIN ACCOUNT CR with (nolock)  ON AA.CR_ACCOUNT_ID=CR.ID
+			JOIN Item It with (nolock)  ON AA.ITEM_ID=It.ID
+			JOIN Unit U with (nolock)  ON AA.UNIT_ID=U.ID
+	  WHERE AA.COMPANY_ID=ISNULL(@COMPANY_ID,AA.COMPANY_ID) 
+		 AND AA.[FINANCIALYEAR_ID]=ISNULL(@FINANCIALYEAR_ID,AA.FINANCIALYEAR_ID)
+		 AND AA.[PREFIX] = ISNULL(@PREFIX,AA.PREFIX)
+		 AND AA.[VOUCHER_ID]=ISNULL(@VOUCHER_ID,AA.VOUCHER_ID)
+		 AND AA.[ISACTIVE]=ISNULL(@ISACTIVE,AA.ISACTIVE)
+	ORDER BY AA.ID
+End
+
+
+
+
+
+
+
+GO
+
+
+USE [Total]
+GO
+
+/****** Object:  StoredProcedure [dbo].[usp_GetInvoiceTran]    Script Date: 12/22/2017 19:09:57 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+CREATE procedure [dbo].[usp_GetInvoiceTran] (
+	@COMPANY_ID	int = NULL
+	,@FINANCIALYEAR_ID tinyint = NULL
+	,@PREFIX NVARCHAR(20) = NULL
+	,@VOUCHER_ID INT = NULL
+	,@ISACTIVE BIT =NULL
+    )
+    As
+    /*Created BY - Sinish on 2017/11/28 
+	0= all states else one state*/
+Begin
+SELECT 
+	 I.[VOUCHER_ID]
+	,I.[COMPANY_ID]
+	,I.[DATE]
+	,I.[ISSALES]
+	,I.[FINANCIALYEAR_ID]
+	,I.[ACCOUNT_ID]
+	,A.ACCOUNTDESC AS [ACCOUNT]
+	,I.[LEDGER_ID]
+	,L.ACCOUNTDESC AS [LEDGER]
+	,I.[PREFIX]
+	,I.[PURCHASEORDER_ID]
+	,I.[ITEM_ID]
+	,IT.[NAME] AS [ITEM]
+	,I.[QUANTITY]
+	,I.[RATE]
+	,I.[UNIT_ID]
+	,U.[NAME] AS [UNIT]
+	,I.[AMOUNT]
+	,I.[DISCOUNT]
+	,I.[CGSTPERCENT]
+	,I.[SGSTPERCENT]
+	,I.[IGSTPERCENT]
+	,I.[VATPERCENT]
+	,I.[CGSTAMOUNT]
+	,I.[SGSTAMOUNT]
+	,I.[IGSTAMOUNT]
+	,I.[VATAMOUNT]
+	,I.[CREDITPERIOD]
+	,I.[CREATEDON]
+	,I.[CREATEDBY]
+	,IT.[STOCK]
+	,I.REFNUM
+	,REPLICATE('0',6-LEN(RTRIM(I.VOUCHER_ID))) + RTRIM(I.VOUCHER_ID) as V_ID
+	,IT.HSNCODE
+	,A.TINNO
+ FROM InvoiceTran I with (nolock) 
+		JOIN Account A  with (nolock) ON I.ACCOUNT_ID=A.ID
+		JOIN ACCOUNT L  with (nolock) ON I.LEDGER_ID=L.ID
+		JOIN Item It  with (nolock) ON I.ITEM_ID=It.ID
+		JOIN Unit U  with (nolock) ON I.UNIT_ID=U.ID
+  WHERE I.COMPANY_ID=ISNULL(@COMPANY_ID,I.COMPANY_ID) 
+	 AND I.[FINANCIALYEAR_ID]=ISNULL(@FINANCIALYEAR_ID,I.FINANCIALYEAR_ID)
+	 AND I.[PREFIX] = ISNULL(@PREFIX,I.PREFIX)
+	 AND I.[VOUCHER_ID]=ISNULL(@VOUCHER_ID,I.VOUCHER_ID)
+	 AND I.[ISACTIVE]=ISNULL(@ISACTIVE,I.ISACTIVE)
+ORDER BY I.ID
+End
+
+
+
+
+
+
+
+GO
+
+
+USE [Total]
+GO
+/****** Object:  StoredProcedure [dbo].[usp_InsReceipt]    Script Date: 12/22/2017 19:10:24 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+  ALTER PROCEDURE  [dbo].[usp_InsReceipt] (  
+   @Company_ID int  
+  ,@AllAccounttran nvarchar(max) 
+  ,@Accounttran nvarchar(max) 
+  ,@date date  
+  ,@VoucherType nvarchar(3)  
+  ,@prefix nvarchar(20)  
+  ,@Financialyear_id tinyint  
+  ,@TotalAmount decimal(15,2)  
+  ,@ACCOUNT_ID bigint  
+  ,@month tinyint  
+  ,@YEAR SMALLINT  
+  ,@LEDGERACCOUNT_ID BIGINT  
+  ,@CREATEDBY NVARCHAR(50)
+  ,@NARRATION NVARCHAR(250)
+  ,@REFNUM nvarchar(25)
+  )  
+
+As  
+
+BEGIN  
+
+    /*Created BY - Sinish on 2017/11/12 */  
+    declare   
+        @OPBALANCE decimal(15,2)   
+        ,@NEWVOUCHERNO bigint   
+
+    set @OPBALANCE =0  
+    set @newVoucherNo=0  
+
+    --Generate the New serial Number  
+    update SerialNo   
+    set @newVoucherNo= SerialNo=SerialNo + 1  
+    where Company_ID = @Company_ID 
+    and Prefix=@prefix   
+    and FINANCIALYEAR_ID=@Financialyear_id  
+
+    /* Update the Debit amount to Account and MonthBalance Table*/  
+    UPDATE Account with (rowlock)   
+    SET DEBITS = DEBITS + @TotalAMOUNT   
+    WHERE COMPANY_ID = @Company_ID   
+    and ID = @ACCOUNT_ID   
+    and FINANCIALYEAR_ID=@FINANCIALYEAR_ID  
+
+    update MonthBalance with (rowlock)   
+    set  DEBITS = debits + @TotalAMOUNT   
+    where COMPANY_ID = @Company_ID   
+    and ACCOUNT_ID=@ACCOUNT_ID   
+    and[MONTH]=@month   
+    and FINANCIALYEAR_ID=@FINANCIALYEAR_ID  
+
+    if @@ROWCOUNT=0 /*The month balance table does not have entry*/  
+    begin  
+        select @OPBALANCE=isnull(max([OPBALANCE])-max([DEBITS])+max([CREDITS]),0)   
+        from MonthBalance   with (nolock)
+        where id = (  
+            select max(id)   
+            from MonthBalance    with (nolock)
+            where COMPANY_ID = @Company_ID   
+            and ACCOUNT_ID=@ACCOUNT_ID   
+            and[MONTH]=@month   
+            and FINANCIALYEAR_ID=@FINANCIALYEAR_ID  
+            )  
+        insert into MonthBalance  
+
+        (COMPANY_ID,FINANCIALYEAR_ID,ACCOUNT_ID,[DATE],[OPBALANCE],[DEBITS],[CREDITS])  
+
+        values  
+
+        (@Company_ID,@Financialyear_id,@ACCOUNT_ID,@date,@OPBALANCE,@TotalAMOUNT,0)  
+
+    end  
+
+    --LEDGER AMOUNT UPDATION DOMESTIC/INTERSTATE/EXPORT etc...  
+
+	INSERT INTO 
+	AllAccounttran(
+		 [COMPANY_ID] ,[DATE] ,[FINANCIALYEAR_ID] ,[VOUCHER_ID] ,[REFNUM]
+		 ,[DR_ACCOUNT_ID] ,[CR_ACCOUNT_ID] ,[AMOUNT] ,[PREFIX]
+		 ,[ITEM_ID] ,[CREATEDON] ,[CREATEDBY] 
+		)
+	VALUES (
+		@Company_ID ,@DATE ,@FINANCIALYEAR_ID ,@newVoucherNo ,@newVoucherNo
+		,0, @LEDGERACCOUNT_ID, @TotalAMOUNT, @PREFIX
+		,0,GETDATE(),@CREATEDBY
+		)
+	INSERT INTO 
+	Accounttran(
+		 [COMPANY_ID] ,[DATE] ,[FINANCIALYEAR_ID] ,[VOUCHER_ID] ,[REFNUM]
+		,[VOUCHERTYPE] ,[DR_ACCOUNT_ID] ,[CR_ACCOUNT_ID] ,[AMOUNT] ,[NARRATION] ,[PREFIX]
+		,[TAXPERCENT] ,[CREDITPERIOD] ,[PARENT_ID] ,[ITEM_ID] ,[CREATEDON] ,[CREATEDBY] ,[IsTax]
+		)
+	VALUES (
+		@Company_ID ,@DATE ,@FINANCIALYEAR_ID ,@newVoucherNo ,@newVoucherNo
+		,@VOUCHERTYPE ,0, @LEDGERACCOUNT_ID, @TotalAMOUNT, @NARRATION, @PREFIX
+		,0,0,0,0,GETDATE(),@CREATEDBY,0
+		)
+    UPDATE Account with (rowlock)   
+    SET  CREDITS=CREDITS + @TotalAMOUNT   
+    WHERE COMPANY_ID = @Company_ID   
+    and ID=@LEDGERACCOUNT_ID   
+    and FINANCIALYEAR_ID=@FINANCIALYEAR_ID  
+
+    update MonthBalance with (rowlock)   
+    set  CREDITS=CREDITS+@TotalAMOUNT   
+    where COMPANY_ID = @Company_ID   
+    and ACCOUNT_ID=@LEDGERACCOUNT_ID   
+    and[MONTH]= @month   
+    and FINANCIALYEAR_ID=@FINANCIALYEAR_ID  
+
+    if @@ROWCOUNT=0  
+    begin  
+        select @OPBALANCE=isnull(max([OPBALANCE])-max([DEBITS])+max([CREDITS]),0)   
+        from MonthBalance    with (nolock)
+        where id in(  
+            select max(id)   
+            from MonthBalance    with (nolock)
+            where COMPANY_ID =@Company_ID   
+            and ACCOUNT_ID=@LEDGERACCOUNT_ID   
+            and[MONTH]=@month   
+            and FINANCIALYEAR_ID=@FINANCIALYEAR_ID  
+            )  
+        insert into MonthBalance  
+        (COMPANY_ID,FINANCIALYEAR_ID,ACCOUNT_ID,[DATE],[OPBALANCE],[DEBITS],[CREDITS])  
+        values  
+        (@Company_ID,@Financialyear_id,@LEDGERACCOUNT_ID,@date,@OPBALANCE,0,@TotalAMOUNT)  
+    end  
+
+	END  
+	--Account and AllAccountTransaction insert
+
+    SELECT @AllAccounttran=REPLACE(@AllAccounttran,'@voucherno',@newVoucherNo);  
+    SELECT @Accounttran=REPLACE(@Accounttran,'@voucherno',@newVoucherNo);  
+
+    exec sp_executesql @AllAccounttran; 
+    exec sp_executesql @Accounttran; 
+
+
+
