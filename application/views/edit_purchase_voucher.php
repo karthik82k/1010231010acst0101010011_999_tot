@@ -550,7 +550,7 @@ function create_salesvoucher() {
                 <div class="form-group col-md-2 col-sm-6 col-xs-6">
                 <label for="emirate" class="col-md-12 control-label ">Bill No<span class="textspandata">*</span></label>
                     <div class="col-md-12 col-sm-9 col-xs-9" style="align:left;">
-                       <input type="number" name="txt_bill_no" id="txt_bill_no" class="input-sm" style="width:92%; border: 1px solid #555555 !important; font-size: 18px;" maxlength = "25" value="<?php echo $bill_no;?>"readonly >
+                       <input type="text" name="txt_bill_no" id="txt_bill_no" class="input-sm" style="width:92%; border: 1px solid #555555 !important; font-size: 18px;" maxlength = "25" value="<?php echo $bill_no;?>"readonly >
                     </div>
                    
                 </div>
