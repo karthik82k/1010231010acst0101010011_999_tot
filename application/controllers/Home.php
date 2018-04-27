@@ -26,13 +26,22 @@ class Home extends CI_Controller {
 		$query_pnl = $this->db->query("EXEC [dbo].[usp_getPandLGraph] @Company_Id =  '$company_id', @FinancialYear_Id = '$financial_year_id'");
 		$this->data['profit_n_loss'] = $profit_n_loss = $query_pnl->result_array();
 
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> master
 		$query_tax = $this->db->query("EXEC [dbo].[usp_getTaxGraph] @Company_Id =  '$company_id', @FinancialYear_Id = '$financial_year_id'");
 		$this->data['tax'] = $tax = $query_tax->result_array();
 
 		$query_sales = $this->db->query("EXEC [dbo].[usp_getSalesGraph] @Company_Id =  '$company_id', @FinancialYear_Id = '$financial_year_id'");
 		$this->data['sales'] = $sales = $query_sales->result_array();
+<<<<<<< HEAD
+
+		$query_announce = $this->db->query("EXEC [dbo].[usp_GetAnnouncements] @COMPANY_ID = $company_id");
+		$this->data['announcement'] = $query_announce->result_array();	
+=======
+>>>>>>> master
 		
 		$this->load->view('home',$this->data);
 	}	

@@ -647,4 +647,18 @@ public function delete_item(){
 		}
 	}
 
+<<<<<<< HEAD
+	public function inventory_report() {
+
+		$company_id = $this->company_id;
+		$finance_id = $this->finance_id;
+
+		$query_inventory_report = $this->db->query("EXEC dbo.usp_GetInverntoryReport @COMPANY_ID = '$company_id', @FINANCIALYEAR_ID = '$finance_id'");
+		$this->data['inventory_report']  = $inventory_report =  $query_inventory_report->result_array();
+		//print_r($inventory_report);
+		$this->load->view('inventory_report',$this->data);
+	}	
+
+=======
+>>>>>>> master
 }
