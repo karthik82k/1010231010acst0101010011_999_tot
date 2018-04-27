@@ -180,7 +180,7 @@
                                 <a href="<?php echo site_url('/inventory/stock_ledger');?>" alt="Stock Ledger" title="Stock Ledger">Stock Ledger</a>
                             </li>  
                              <li>
-                                <a href="#" alt="Inventory Report" title="Inventory Report">Inventory Report</a>
+                                <a href="<?php echo site_url('inventory/inventory_report');?>" alt="Inventory Report" title="Inventory Report">Inventory Report</a>
                             </li>                                                      
                             <li>
                                 <a href="<?php echo site_url('/mis_report/stock_journal_checklist');?>" alt="Stock Jrnl. Chk.List" title="Stock Jrnl. Chk.List">Stock Jrnl. Chk.List</a>
