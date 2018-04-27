@@ -195,6 +195,7 @@ label {
             
         </div>
         </div>
+<<<<<<< HEAD
         <?php if(!empty($announcement)){
           ?>
           
@@ -208,6 +209,9 @@ label {
         </div>
         <?php
           } ?>
+=======
+        
+>>>>>>> master
         <div class="col-md-12">
         <div class="col-md-4"  style="text-align:center; border-radius: 1px 1px 1px 1px; border: solid 1px #e5e2e2; padding:1px 1px 1px 1px; width: 34.5%; margin-right: 1px; "> <div id="curve_chart" style="width: 380px; height: 206px;"></div>
         </div>

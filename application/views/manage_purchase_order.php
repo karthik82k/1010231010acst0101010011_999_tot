@@ -81,7 +81,11 @@ if(isset($_GET['msg'])){
                 }
                 echo $type;?></td>
                 <td><?php echo $val['Total'];?></td>
+<<<<<<< HEAD
                 <td><a href="<?php echo site_url('/entry/edit_purchase_order/'.$val['VOUCHER_ID'].'/'.$val['ISSALESORDER'].'/?pre='.urlencode($val['PREFIX']));?>"><span class="fa fa-pencil-square-o"></span></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="<?php echo site_url('/entry/print_purchase_order/'.$val['VOUCHER_ID'].'/'.$val['ISSALESORDER'].'/?pre='.urlencode($val['PREFIX']));?>"><span class="fa fa-print" aria-hidden="true"></span></a></td>
+=======
+                <td><a href="<?php echo site_url('/entry/edit_purchase_order/'.$val['VOUCHER_ID'].'/'.$val['ISSALESORDER'].'/?pre='.urlencode($val['PREFIX']));?>"><span class="fa fa-pencil-square-o"></span></a></td>
+>>>>>>> master
 
             </tr>
             <?php

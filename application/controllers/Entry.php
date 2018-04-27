@@ -2291,6 +2291,7 @@ public function edit_purchase_voucher() {
 		}
 	}
 
+<<<<<<< HEAD
 	public function print_purchase_order() {
 
 
@@ -2386,6 +2387,9 @@ public function edit_purchase_voucher() {
 	}
 
 	public function print_delivery_challan() {
+=======
+	public function print_invoice() {
+>>>>>>> master
 		$company_id = $this->company_id;		
         $finance_id = $this->finance_id;	
 		$query_company = $this->db->query("EXEC [dbo].[usp_GetCompany] @ID = '$company_id'");
@@ -2396,7 +2400,11 @@ public function edit_purchase_voucher() {
 			$voucher_id = $this->uri->segment(3);	
 			$pre = $this->input->get('pre');
 			$prefix = urldecode($pre);		
+<<<<<<< HEAD
 			$query_po_det = $this->db->query("EXEC [dbo].[usp_GetDeliveryChalan] @COMPANY_ID = '$company_id', @FINANCIALYEAR_ID = '$finance_id', @PREFIX = '$prefix', @VOUCHER_ID = '$voucher_id', @ISACTIVE = 1");
+=======
+			$query_po_det = $this->db->query("EXEC [dbo].[usp_GetInvoiceTran] @COMPANY_ID = '$company_id', @FINANCIALYEAR_ID = '$finance_id', @PREFIX = '$prefix', @VOUCHER_ID = '$voucher_id', @ISACTIVE = 1");
+>>>>>>> master
 			 $purchase_order = $query_po_det->result_array();
 			$account_id = $this->data['account_id'] = $purchase_order[0]['ACCOUNT_ID'];
 			$this->data['ACCOUNT'] = $purchase_order[0]['ACCOUNT'];
@@ -2406,6 +2414,10 @@ public function edit_purchase_voucher() {
 			$this->data['date'] = date("d-m-Y",strtotime($purchase_order[0]['DATE']));
 			$this->data['prefix'] = $purchase_order[0]['PREFIX'];
 			$this->data['sn'] = $purchase_order[0]['VOUCHER_ID'];
+<<<<<<< HEAD
+=======
+			$this->data['credit_period'] = $purchase_order[0]['CREDITPERIOD'];
+>>>>>>> master
 			$this->data['bill_no'] = $purchase_order[0]['REFNUM'];			
 			$this->data['tinno'] = $purchase_order[0]['TINNO'];
 			$this->data['sno'] = $purchase_order[0]['V_ID'];
@@ -2419,10 +2431,32 @@ public function edit_purchase_voucher() {
 		 	
 		 	$this->data['transport_mode'] = $purchase_order[0]['MODEOFTRANSPORT'];
 		 	$this->data['vehicle_no'] = $purchase_order[0]['VEHICLEREGNO'];
+<<<<<<< HEAD
 		 	$this->data['po_ref_no'] =  $purchase_order[0]['PURCHASEORDER_NO'];
 		 	$this->data['dc_no'] =  $purchase_order[0]['DeliveryChalanNo'];
 		    $this->data['purchase_order_detail'] = $purchase_order;	
 
+=======
+		 	$this->data['reverse_charge'] = $purchase_order[0]['REVERSE_CHARGES_APPLICABLE'];
+		 	$this->data['round_off'] =  $purchase_order[0]['ROUNDOFF'];
+		 	$this->data['po_ref_no'] =  $purchase_order[0]['PURCHASEORDER_NO'];
+		 	$this->data['dc_no'] =  $purchase_order[0]['DeliveryChalanNo'];
+		$this->data['purchase_order_detail'] = $purchase_order;	
+
+ 
+
+		$query_fin = $this->db->query("EXEC	[dbo].[usp_GetCompanyFinancialYear]	@COMPANY_ID = '$company_id', @FINANCIALYEAR_ID = '$finance_id'");
+		$this->data['financial_year'] = $query_fin->result_array();
+
+		$query_po = $this->db->query("SELECT Distinct[PREFIX],[VOUCHER_ID],REPLICATE('0',6-LEN(RTRIM(VOUCHER_ID))) + RTRIM(VOUCHER_ID) as id FROM [dbo].[Orders] where COMPANY_ID = '$company_id' and FINANCIALYEAR_ID = '$finance_id' and ISSALESORDER = 0 ");
+		$this->data['purchase_order'] = $query_po->result_array();
+
+		$query_sales_total = $this->db->query("SELECT PREFIX,SUM(AMOUNT)-SUM(DISCOUNT)+SUM(IGSTAMOUNT)+SUM(CGSTAMOUNT)+SUM(SGSTAMOUNT) as Total,VOUCHER_ID,ACCOUNT_ID,LEDGER_ID,DATE,REPLICATE('0',6-LEN(RTRIM(VOUCHER_ID))) + RTRIM(VOUCHER_ID) as V_ID,isnull(ROUNDOFF,0) as ROUNDOFF from InvoiceTran WHERE COMPANY_ID = '$company_id' AND FINANCIALYEAR_ID = '$finance_id' AND ISSALES =1 AND VOUCHER_ID = '$voucher_id' AND PREFIX='$prefix' group by PREFIX,VOUCHER_ID,ACCOUNT_ID,LEDGER_ID,DATE,ROUNDOFF");
+		$total = $query_sales_total->result_array();
+		$final_word= $total[0]['Total'] + $total[0]['ROUNDOFF'];
+		 $final_words  = $this->getIndianCurrency($final_word);
+		 $this->data['final_word'] = str_replace('.',' and ', $final_words);
+>>>>>>> master
 		$query_address = $this->db->query("EXEC [dbo].[usp_GetPartyAddress] @COMPANY_ID = '$company_id', @ACCOUNT_ID = '$account_id', @ISBILLING = 1, @ISACTIVE = 1");
 		$this->data['address'] = $address = $query_address->result_array();
 		if(!empty($address)){			
@@ -2445,6 +2479,7 @@ public function edit_purchase_voucher() {
 		}else{
 			$this->data['party_shipping_address'] = $party_shipping_address;
 		}
+<<<<<<< HEAD
 
 		$this->load->view('print_delivery_challan',$this->data);
 	}
@@ -2456,6 +2491,27 @@ public function edit_purchase_voucher() {
 		$this->data['company_data'] = $query_company->result_array();	
 
 			
+=======
+		$query_terms = $this->db->query("EXEC [dbo].[usp_GetTermsAndConditions] @COMPANY_ID = '$company_id'");
+		$terms = $query_terms->result_array();
+		if(!empty($terms)){
+			$this->data['termsnconditions'] = $terms[0]['TermsAndConditions'];
+		}else{
+			$this->data['termsnconditions'] = '';
+		}
+
+		$this->load->view('print_invoice',$this->data);
+	}
+
+	public function print_purchase() {
+		$company_id = $this->company_id;		
+        $finance_id = $this->finance_id;
+		$query_company = $this->db->query("EXEC [dbo].[usp_GetCompany] @ID = '$company_id'");
+		$this->data['company_data'] = $query_company->result_array();	
+		$company_id = $this->company_id;		
+        $finance_id = $this->finance_id;
+		
+>>>>>>> master
 			
 			$voucher_id = $this->uri->segment(3);	
 			$pre = $this->input->get('pre');
@@ -2465,8 +2521,12 @@ public function edit_purchase_voucher() {
 			$account_id = $this->data['account_id'] = $purchase_order[0]['ACCOUNT_ID'];
 			$this->data['ACCOUNT'] = $purchase_order[0]['ACCOUNT'];
 			$this->data['ledger_id'] = $purchase_order[0]['LEDGER_ID'];
+<<<<<<< HEAD
 			$this->data['purchase_id'] = $po_id = $purchase_order[0]['PURCHASEORDER_ID'];
 			$this->data['purchase_order_prefix'] = $po_prefix = $purchase_order[0]['PURCHASEORDER_PREFIX'];
+=======
+			$this->data['purchase_id'] = $purchase_order[0]['PURCHASEORDER_ID'];
+>>>>>>> master
 			$this->data['date'] = date("d-m-Y",strtotime($purchase_order[0]['DATE']));
 			$this->data['prefix'] = $purchase_order[0]['PREFIX'];
 			$this->data['sn'] = $purchase_order[0]['VOUCHER_ID'];
@@ -2474,6 +2534,7 @@ public function edit_purchase_voucher() {
 			$this->data['bill_no'] = $purchase_order[0]['REFNUM'];			
 			$this->data['tinno'] = $purchase_order[0]['TINNO'];
 			$this->data['sno'] = $purchase_order[0]['V_ID'];
+<<<<<<< HEAD
 			$this->data['type_sales'] = $purchase_order[0]['LEDGER'];
 			$shipping_id = $purchase_order[0]['shipping_partyAddress_ID'];
 			if($purchase_order[0]['DATEOFSUPPLY'] != '1970-01-01'){
@@ -2492,12 +2553,20 @@ public function edit_purchase_voucher() {
 
  
 
+=======
+			//$shipping_id = $purchase_order[0]['shipping_partyAddress_ID'];
+		 
+		$this->data['purchase_order_detail'] = $purchase_order;	
+		
+		
+>>>>>>> master
 		$query_fin = $this->db->query("EXEC	[dbo].[usp_GetCompanyFinancialYear]	@COMPANY_ID = '$company_id', @FINANCIALYEAR_ID = '$finance_id'");
 		$this->data['financial_year'] = $query_fin->result_array();
 
 		$query_po = $this->db->query("SELECT Distinct[PREFIX],[VOUCHER_ID],REPLICATE('0',6-LEN(RTRIM(VOUCHER_ID))) + RTRIM(VOUCHER_ID) as id FROM [dbo].[Orders] where COMPANY_ID = '$company_id' and FINANCIALYEAR_ID = '$finance_id' and ISSALESORDER = 0 ");
 		$this->data['purchase_order'] = $query_po->result_array();
 
+<<<<<<< HEAD
 		$query_sales_total = $this->db->query("SELECT PREFIX,SUM(AMOUNT)-SUM(DISCOUNT)+SUM(IGSTAMOUNT)+SUM(CGSTAMOUNT)+SUM(SGSTAMOUNT) as Total,VOUCHER_ID,ACCOUNT_ID,LEDGER_ID,DATE,REPLICATE('0',6-LEN(RTRIM(VOUCHER_ID))) + RTRIM(VOUCHER_ID) as V_ID,isnull(ROUNDOFF,0) as ROUNDOFF from InvoiceTran WHERE COMPANY_ID = '$company_id' AND FINANCIALYEAR_ID = '$finance_id' AND ISSALES =1 AND VOUCHER_ID = '$voucher_id' AND PREFIX='$prefix' group by PREFIX,VOUCHER_ID,ACCOUNT_ID,LEDGER_ID,DATE,ROUNDOFF");
 		$total = $query_sales_total->result_array();
 		$final_word= $total[0]['Total'] + $total[0]['ROUNDOFF'];
@@ -2534,6 +2603,33 @@ public function edit_purchase_voucher() {
 		}
 
 		$this->load->view('print_invoice',$this->data);
+=======
+		$query_sales_total = $this->db->query("SELECT PREFIX,SUM(AMOUNT)-SUM(DISCOUNT)+SUM(IGSTAMOUNT)+SUM(CGSTAMOUNT)+SUM(SGSTAMOUNT) as Total,VOUCHER_ID,ACCOUNT_ID,LEDGER_ID,DATE,REPLICATE('0',6-LEN(RTRIM(VOUCHER_ID))) + RTRIM(VOUCHER_ID) as V_ID from InvoiceTran WHERE COMPANY_ID = '$company_id' AND FINANCIALYEAR_ID = '$finance_id' AND ISSALES =0 group by PREFIX,VOUCHER_ID,ACCOUNT_ID,LEDGER_ID,DATE");
+		$total = $query_sales_total->result_array();
+		$final_word= $total[0]['Total'];
+		 $final_words  = $this->getIndianCurrency($final_word);
+		 $this->data['final_word'] = str_replace('.',' and ', $final_words);
+		$query_address = $this->db->query("EXEC [dbo].[usp_GetPartyAddress] @COMPANY_ID = '$company_id', @ACCOUNT_ID = '$account_id', @ISBILLING = 1");
+		$this->data['address'] = $address = $query_address->result_array();
+		if(!empty($address)){			
+			$party_address =  array('ADDRESS1' => $address[0]['ADDRESS1'], 'ADDRESS2' => $address[0]['ADDRESS2'],'DISTRICT' => $address[0]['DISTRICT'],'PINCODE' => $address[0]['PINCODE'], 'STATE' => $address[0]['STATE']);
+		}else{
+			$party_address =  array('ADDRESS1' => 'Not Available', 'ADDRESS2' => '','DISTRICT' => '','PINCODE' => '', 'STATE' => '');	
+		}
+
+		$this->data['party_address'] = $party_address;
+		/*$query_shipping = $this->db->query("EXEC [dbo].[usp_GetPartyAddress] @COMPANY_ID = '$company_id', @ID = '$shipping_id'");
+		$this->data['shipping_address'] = $shipping_address = $query_shipping->result_array();
+		if(!empty($shipping_address)){			
+			$party_shipping_address =  array('ADDRESS1' => $shipping_address[0]['ADDRESS1'], 'ADDRESS2' => $shipping_address[0]['ADDRESS2'],'DISTRICT' => $shipping_address[0]['DISTRICT'],'PINCODE' => $shipping_address[0]['PINCODE'], 'STATE' => $shipping_address[0]['STATE']);
+		}else{
+			$party_shipping_address =  array('ADDRESS1' => 'Not Available', 'ADDRESS2' => '','DISTRICT' => '','PINCODE' => '', 'STATE' => '');	
+		}
+
+		$this->data['party_shipping_address'] = $party_shipping_address;*/
+
+		$this->load->view('print_purchase',$this->data);
+>>>>>>> master
 	}
 
 	public function print_debit_note() {

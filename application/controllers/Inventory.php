@@ -647,6 +647,7 @@ public function delete_item(){
 		}
 	}
 
+<<<<<<< HEAD
 	public function inventory_report() {
 
 		$company_id = $this->company_id;
@@ -658,4 +659,6 @@ public function delete_item(){
 		$this->load->view('inventory_report',$this->data);
 	}	
 
+=======
+>>>>>>> master
 }
