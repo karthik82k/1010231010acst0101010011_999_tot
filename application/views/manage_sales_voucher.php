@@ -77,8 +77,8 @@ if(isset($_GET['msg'])){
                 <th>Account Name</th>
                 <th>Ledger Name</th>               
                 <!--<th>Financial Year</th> -->
-                 <th>Taxable Amount</th>
-                 <th>Tax Amount</th>
+                 <th>Taxable <br>Amount</th>
+                 <th>Tax <br> Amount</th>
                 <th class="no-sort">Action</th>
             </tr>
         </thead>
@@ -96,7 +96,7 @@ if(isset($_GET['msg'])){
                <!-- <td><?php echo $financial_year_selected;?></td> -->
                 <td><?php echo $inr_total;?></td>
                  <td><?php echo $val['Tax'];?></td>
-                <td><?php if($val['Printed'] == 0){?><a href="<?php echo site_url('/entry/edit_sales_voucher/'.$val['VOUCHER_ID'].'/?pre='.urlencode($val['PREFIX']));?>"><span class="fa fa-pencil-square-o"></span></a>&nbsp;&nbsp;<!--<a href="<?php echo site_url('/entry/delete_sales_voucher/'.$val['VOUCHER_ID'].'/'.'/?pre='.urlencode($val['PREFIX']));?>"  onclick="if (confirm('Delete selected item?')){return true;}else{event.stopPropagation(); event.preventDefault();};"><span class="fa fa-trash" aria-hidden="true"></span></a>&nbsp;&nbsp;--><?php } ?><a href="<?php echo site_url('/entry/print_invoice/'.$val['VOUCHER_ID'].'/'.'/?pre='.urlencode($val['PREFIX']));?>"><span class="fa fa-print" aria-hidden="true"></span></a></td>
+                <td><?php if($val['Printed'] == 0){?><a href="<?php echo site_url('/entry/edit_sales_voucher/'.$val['VOUCHER_ID'].'/?pre='.urlencode($val['PREFIX']));?>"><span class="fa fa-pencil-square-o"></span></a>&nbsp;&nbsp;<!--<a href="<?php echo site_url('/entry/delete_sales_voucher/'.$val['VOUCHER_ID'].'/'.'/?pre='.urlencode($val['PREFIX']));?>"  onclick="if (confirm('Delete selected item?')){return true;}else{event.stopPropagation(); event.preventDefault();};"><span class="fa fa-trash" aria-hidden="true"></span></a>&nbsp;&nbsp;--><?php } ?><a href="<?php echo site_url('/entry/print_invoice/'.$val['VOUCHER_ID'].'/'.'/?pre='.urlencode($val['PREFIX']));?>"><span class="fa fa-print" aria-hidden="true"></span></a>&nbsp;&nbsp;<a href="<?php echo site_url('/entry/print_delivery_challan/'.$val['VOUCHER_ID'].'/'.'/?pre='.urlencode($val['PREFIX']));?>"><span >Print D.C.</span></a></td>
             </tr>
         <?php
          }
