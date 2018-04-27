@@ -195,7 +195,19 @@ label {
             
         </div>
         </div>
-        
+        <?php if(!empty($announcement)){
+          ?>
+          
+        <div class="col-md-12" style="height: 20px; vertical-align: middle;">
+
+        <?php $news = '';
+         foreach ($announcement as $key) {
+         $news .= $key['Announcement'].';  ';
+        }  ?>
+          <marquee style="color: red; font-size: 18px; font-weight: bold;" onmouseover="this.stop();" onmouseout="this.start();"><?php echo $news;?></marquee>
+        </div>
+        <?php
+          } ?>
         <div class="col-md-12">
         <div class="col-md-4"  style="text-align:center; border-radius: 1px 1px 1px 1px; border: solid 1px #e5e2e2; padding:1px 1px 1px 1px; width: 34.5%; margin-right: 1px; "> <div id="curve_chart" style="width: 380px; height: 206px;"></div>
         </div>
