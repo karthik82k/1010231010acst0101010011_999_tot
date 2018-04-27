@@ -8,7 +8,7 @@ class Definition extends CI_Controller {
         parent::__construct();
         
         $this->company_id = $this->session->userdata('company_id');
-       $this->finance_id = $this->session->userdata('financial_id');
+        $this->finance_id = $this->session->userdata('financial_id');
         $this->user_name = $this->session->userdata('user_name');
         $this->db_name = $this->session->userdata('db_name');
         $this->connectapi->cons($this->db_name);        
@@ -64,7 +64,7 @@ class Definition extends CI_Controller {
 		$pincode = $this->input->post('txt_pin_code');
 		$billing = 1; */
 		$page = $this->input->post('txt_page');
-		$result = $this->db->query("DECLARE	@return int EXEC @return = [dbo].[usp_InsAccount] @COMPANY_ID = '$company_id', @ACCOUNTDESC = '$account_name', @ACCOUNTTYPE = '$account_type', @GROUP_ID = '$group_id', @TINNO = '$tin_no', @OPBALANCE = '$opening_balance', @BILLOFSALE_ID = '$bill_of_sales', @CREATEDBY = 'total', @Isactive = '1', @UPDATEDBY  = '', @FINANCIALYEAR_ID = '$financial_id',@REVERSE_CHARGES_APPLICABLE = '$reverse_charge', @MAINTAIN_BILLWISE_DETAILS = '$billwise' SELECT @return as ID");
+		$result = $this->db->query("DECLARE	@return int EXEC @return = [dbo].[usp_InsAccount] @COMPANY_ID = '$company_id', @ACCOUNTDESC = '$account_name', @ACCOUNTTYPE = '$account_type', @GROUP_ID = '$group_id', @TINNO = '$tin_no', @OPBALANCE = '$opening_balance', @BILLOFSALE_ID = '$bill_of_sales', @CREATEDBY = '$user_name', @Isactive = '1', @UPDATEDBY  = '', @FINANCIALYEAR_ID = '$financial_id',@REVERSE_CHARGES_APPLICABLE = '$reverse_charge', @MAINTAIN_BILLWISE_DETAILS = '$billwise' SELECT @return as ID");
 		if($result){
 			$account = $result->result_array();
 			$account_id = $account[0]['ID'];
@@ -285,7 +285,7 @@ class Definition extends CI_Controller {
 		$bill_of_sales = 0;
 		$user_name = $this->user_name;		
 
-		$result = $this->db->query("DECLARE	@return int EXEC @return = [dbo].[usp_InsAccount] @COMPANY_ID = '$company_id', @ACCOUNTDESC = '$account_name', @ACCOUNTTYPE = '$account_type', @GROUP_ID = '$group_id', @TINNO = '$tin_no', @OPBALANCE = '$opening_balance', @BILLOFSALE_ID = '$bill_of_sales', @CREATEDBY = 'total', @Isactive = '1', @UPDATEDBY  = '', @FINANCIALYEAR_ID = '$financial_id',@REVERSE_CHARGES_APPLICABLE = '$reverse_charge', @MAINTAIN_BILLWISE_DETAILS = '$billwise' SELECT @return as ID");
+		$result = $this->db->query("DECLARE	@return int EXEC @return = [dbo].[usp_InsAccount] @COMPANY_ID = '$company_id', @ACCOUNTDESC = '$account_name', @ACCOUNTTYPE = '$account_type', @GROUP_ID = '$group_id', @TINNO = '$tin_no', @OPBALANCE = '$opening_balance', @BILLOFSALE_ID = '$bill_of_sales', @CREATEDBY = '$user_name', @Isactive = '1', @UPDATEDBY  = '', @FINANCIALYEAR_ID = '$financial_id',@REVERSE_CHARGES_APPLICABLE = '$reverse_charge', @MAINTAIN_BILLWISE_DETAILS = '$billwise' SELECT @return as ID");
 		if($result){
 			$account = $result->result_array();
 			$account_id = $account[0]['ID'];
